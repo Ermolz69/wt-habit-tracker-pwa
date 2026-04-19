@@ -12,7 +12,7 @@ export const useSync = () => {
   const pushMutation = useMutation({
     mutationFn: async () => {
       if (!user) return;
-      return fetchWithAuth('/sync/push', {
+      return fetchWithAuth<{ success: boolean; message: string }>('/sync/push', {
         method: 'POST',
         body: JSON.stringify({ habits }),
       });
@@ -26,7 +26,7 @@ export const useSync = () => {
     queryKey: ['sync-pull'],
     queryFn: async () => {
       if (!user) return null;
-      const data = await fetchWithAuth('/sync/pull');
+      const data = await fetchWithAuth<{ habits: typeof habits }>('/sync/pull');
       if (data.habits) {
         setHabits(data.habits);
       }

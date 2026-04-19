@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
-import { authService } from '../services/auth.service';
+import { Response } from 'express';
+import { AuthRequest } from '../common/types/auth';
+import { AuthService } from '../services/auth.service';
 
 const setTokenCookie = (res: Response, token: string) => {
   res.cookie('token', token, {
@@ -10,56 +11,30 @@ const setTokenCookie = (res: Response, token: string) => {
   });
 };
 
-export const register = async (req: Request, res: Response): Promise<void> => {
-  try {
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  register = async (req: AuthRequest, res: Response): Promise<void> => {
     const { username, password } = req.body;
-    if (!username || !password) {
-      res.status(400).json({ error: 'Username and password are required' });
-      return;
-    }
-    const { user, token } = await authService.register(username, password);
+    const { user, token } = await this.authService.register(username, password);
     setTokenCookie(res, token);
-    res.status(201).json({ user });
-  } catch (error: any) {
-    if (error.message === 'Username already exists') {
-      res.status(400).json({ error: error.message });
-      return;
-    }
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Server error during registration' });
-  }
-};
+    res.status(201).json({ user, token });
+  };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
-  try {
+  login = async (req: AuthRequest, res: Response): Promise<void> => {
     const { username, password } = req.body;
-    const { user, token } = await authService.login(username, password);
+    const { user, token } = await this.authService.login(username, password);
     setTokenCookie(res, token);
-    res.status(200).json({ user });
-  } catch (error: any) {
-    if (error.message === 'Invalid credentials') {
-      res.status(400).json({ error: error.message });
-      return;
-    }
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error during login' });
-  }
-};
+    res.status(200).json({ user, token });
+  };
 
-export const logout = async (req: Request, res: Response): Promise<void> => {
-  res.clearCookie('token');
-  res.json({ success: true });
-};
+  logout = async (_req: AuthRequest, res: Response): Promise<void> => {
+    res.clearCookie('token');
+    res.json({ success: true });
+  };
 
-export const getProfile = async (req: any, res: Response): Promise<void> => {
-  try {
-    const user = await authService.getProfile(req.userId);
+  getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user = await this.authService.getProfile(req.userId!);
     res.json(user);
-  } catch (error: any) {
-    if (error.message === 'User not found') {
-      res.status(404).json({ error: error.message });
-      return;
-    }
-    res.status(500).json({ error: 'Server error' });
-  }
-};
+  };
+}

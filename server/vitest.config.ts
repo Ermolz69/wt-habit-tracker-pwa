@@ -5,10 +5,10 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./src/__tests__/setup.ts'],
     fileParallelism: false,
-    poolOptions: {
-      threads: {
-        singleThread: true
-      }
-    }
-  },
+    include: ['src/**/*.test.ts'],
+    exclude: ['dist/**'],
+    pool: 'forks',
+    minWorkers: 1,
+    maxWorkers: 1,
+  }
 });

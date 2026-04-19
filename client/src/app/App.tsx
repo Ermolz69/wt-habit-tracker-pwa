@@ -21,7 +21,7 @@ export const App = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const data = await fetchWithAuth('/auth/me');
+        const data = await fetchWithAuth<{ id: string; username: string }>('/auth/me');
         setUser(data);
       } catch (e) {
         logout();

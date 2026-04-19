@@ -1,15 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-export interface AuthRequest extends Request {
-  userId?: string;
-}
+import { AppError } from '../common/errors/app-error';
+import { AuthRequest } from '../common/types/auth';
 
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
   const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
-    res.status(401).json({ error: 'Authentication required' });
+    next(new AppError('Authentication required', 401));
     return;
   }
 
@@ -18,6 +16,6 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     req.userId = decoded.userId;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    next(new AppError('Invalid token', 401));
   }
 };

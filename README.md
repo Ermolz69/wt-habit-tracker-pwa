@@ -1,75 +1,122 @@
-# 📱 Offline Habit Tracker (Progressive Web App)
+# Habit Tracker PWA
 
-This project is a modern Full-Stack Web Application (PWA) with a Feature-Sliced Design (FSD) architecture on the client and a secure Node.js backend. It demonstrates advanced capabilities: offline-first experience, background data synchronization, JWT authentication, and native-like installation.
+Full-stack monorepo for an offline-first habit tracker with a componentized React client and a layered Node.js backend.
 
-## 🚀 Core Features
+## What is inside
 
-- **Offline-First:** The app operates perfectly without internet. Data is cached locally (IndexedDB via Zustand) and synced later.
-- **Client-Server Architecture:** Node.js/Express backend with Prisma (SQLite) handling Auth and Sync.
-- **Add to Home Screen:** Can be installed on mobile and desktop directly from the browser.
-- **Habit Tracking:** Visualize your 7-day habit progression with elegant UI elements.
-- **Achievement System:** Earn interactive badges based on your streak (SVG sprites used for performance).
+- `client` - React + Vite PWA frontend organized around `app / pages / widgets / features / entities / shared`
+- `server` - Express + TypeScript backend with controller/service/repository layering and a composition-root style module setup
+- `docs` - project documentation for architecture, API, testing, and development workflow
 
-## 🛠 Tech Stack
+## Core capabilities
 
-- **Frontend:** React 18, Vite, Tailwind CSS, Zustand, React Query.
-- **Backend:** Node.js, Express, TypeScript, Prisma ORM, Zod Validation.
-- **Testing:** Vitest, Supertest.
-- **Code Quality:** ESLint, Husky, Lint-Staged, GitHub Actions.
+- offline-first local habit storage
+- background sync with the backend
+- cookie-based JWT authentication
+- reusable UI primitives and decomposed widgets
+- Prisma persistence with SQLite
+- unit, repository, middleware, controller, service, and integration tests
 
----
+## Architecture summary
 
-## 💻 Installation & Setup
+### Backend
 
-To run this project locally, follow these steps:
+The backend follows a layered structure inspired by modular Nest-style responsibility separation:
 
-### 1. Prerequisites
-Ensure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
+- `routes` expose HTTP endpoints
+- `controllers` translate HTTP requests and responses
+- `services` contain business rules
+- `repositories` contain persistence logic
+- `modules` wire dependencies together
+- `infrastructure` owns shared technical providers such as Prisma
+- `common` contains reusable middleware, error handling, and shared types
 
-### 2. Project Initialization
-This is a monorepo setup using npm workspaces. Run the following command in the root directory:
+### Frontend
+
+The frontend follows a Feature-Sliced Design style structure:
+
+- `app` bootstraps routing and providers
+- `pages` compose full screens
+- `widgets` assemble larger UI blocks
+- `features` contain user scenarios and orchestration logic
+- `entities` contain domain state
+- `shared` contains UI primitives, API helpers, and utilities
+
+## Getting started
+
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Environment Variables
-Create `.env` files in both `client` and `server` based on `.env.example`.
-- `server/.env`: `DATABASE_URL`, `JWT_SECRET`, `PORT`
-- `client/.env`: `VITE_API_URL`
+### 2. Configure environment
 
-### 4. Database Setup
-Push the schema to the SQLite database:
+Create the following files:
+
+- `client/.env`
+- `server/.env`
+
+Recommended variables:
+
+```env
+# client/.env
+VITE_API_URL=http://localhost:3000/api
+```
+
+```env
+# server/.env
+DATABASE_URL=file:./dev.db
+JWT_SECRET=replace-this-secret
+CLIENT_URL=http://localhost:5173
+PORT=3000
+```
+
+### 3. Prepare the database
+
 ```bash
 npm run prisma:push --workspace=server
 ```
 
-## 💻 Development & Build
+## Development
 
-### Development Mode
-Start both client and server simultaneously:
+Run the frontend:
+
 ```bash
-# Terminal 1: Backend (runs on http://localhost:3000)
-npm run dev --workspace=server
-
-# Terminal 2: Frontend (runs on http://localhost:5173)
 npm run dev --workspace=client
 ```
 
-### Production Build
-Builds the entire workspace (compiles TypeScript backend and Vite frontend with Service Workers):
+Run the backend:
+
+```bash
+npm run dev --workspace=server
+```
+
+## Verification
+
+Type-check the whole workspace:
+
+```bash
+npm run typecheck --workspaces
+```
+
+Build the whole workspace:
+
 ```bash
 npm run build --workspaces
 ```
 
-### Testing & Linting
+Run backend tests:
+
 ```bash
-# Run all linter checks
-npm run lint --workspaces
-
-# Run type checks
-npm run typecheck --workspaces
-
-# Run backend unit/integration tests
 npm test --workspace=server
 ```
+
+## Documentation
+
+- [Architecture](./docs/architecture.md)
+- [Backend](./docs/backend.md)
+- [Frontend](./docs/frontend.md)
+- [API](./docs/api.md)
+- [Testing](./docs/testing.md)
+- [Development](./docs/development.md)

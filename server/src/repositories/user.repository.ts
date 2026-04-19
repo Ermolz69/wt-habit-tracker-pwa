@@ -1,21 +1,20 @@
 import { PrismaClient, User } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma as defaultPrisma } from '../infrastructure/prisma';
 
 export class UserRepository {
+  constructor(private readonly prisma: PrismaClient = defaultPrisma) {}
+
   async findByUsername(username: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { username } });
+    return this.prisma.user.findUnique({ where: { username } });
   }
 
   async findById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id } });
   }
 
   async create(data: Omit<User, 'id' | 'createdAt'>): Promise<User> {
-    return prisma.user.create({
+    return this.prisma.user.create({
       data,
     });
   }
 }
-
-export const userRepository = new UserRepository();

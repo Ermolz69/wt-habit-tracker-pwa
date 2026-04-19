@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import { errorHandler } from './common/middleware/error-handler';
 import authRoutes from './routes/auth';
 import syncRoutes from './routes/sync';
 
@@ -32,5 +33,7 @@ app.use('/api/sync', syncRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+app.use(errorHandler);
 
 export default app;

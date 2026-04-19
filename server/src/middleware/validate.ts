@@ -10,7 +10,7 @@ export const validate = (schema: ZodSchema) =>
         params: req.params,
       });
       next();
-    } catch (error: any) {
-      res.status(400).json({ error: 'Validation failed', details: error.errors });
+    } catch (error) {
+      next(error);
     }
   };

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../app';
 
@@ -6,44 +6,51 @@ describe('Sync API', () => {
   let token: string;
 
   beforeEach(async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({ username: 'syncuser', password: 'password123' });
-    token = res.body.token;
+    const response = await request(app).post('/api/auth/register').send({
+      username: 'syncuser',
+      password: 'password123',
+    });
+
+    token = response.body.token;
   });
 
-  it('should push habits to server', async () => {
-    const res = await request(app)
+  it('pushes habits to server', async () => {
+    const response = await request(app)
       .post('/api/sync/push')
       .set('Authorization', `Bearer ${token}`)
       .send({
         habits: [
-          { id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'] },
-          { id: '2', title: 'Test Habit 2', completedDates: [] }
-        ]
+          { id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'], updatedAt: Date.now() },
+          { id: '2', title: 'Test Habit 2', completedDates: [], updatedAt: Date.now() },
+        ],
       });
 
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
   });
 
-  it('should pull habits from server', async () => {
+  it('pulls habits from server', async () => {
     await request(app)
       .post('/api/sync/push')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        habits: [
-          { id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'] }
-        ]
+        habits: [{ id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'], updatedAt: Date.now() }],
       });
 
-    const res = await request(app)
+    const response = await request(app)
       .get('/api/sync/pull')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(res.status).toBe(200);
-    expect(res.body.habits).toHaveLength(1);
-    expect(res.body.habits[0].title).toBe('Test Habit 1');
-    expect(res.body.habits[0].completedDates).toEqual(['2023-10-01']);
+    expect(response.status).toBe(200);
+    expect(response.body.habits).toHaveLength(1);
+    expect(response.body.habits[0].title).toBe('Test Habit 1');
+    expect(response.body.habits[0].completedDates).toEqual(['2023-10-01']);
+  });
+
+  it('rejects unauthenticated sync requests', async () => {
+    const response = await request(app).get('/api/sync/pull');
+
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe('Authentication required');
   });
 });

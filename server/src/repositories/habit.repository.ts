@@ -1,29 +1,28 @@
-import { PrismaClient, Habit } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Habit, Prisma, PrismaClient } from '@prisma/client';
+import { prisma as defaultPrisma } from '../infrastructure/prisma';
 
 export class HabitRepository {
+  constructor(private readonly prisma: PrismaClient = defaultPrisma) {}
+
   async findByUserId(userId: string): Promise<Habit[]> {
-    return prisma.habit.findMany({ where: { userId } });
+    return this.prisma.habit.findMany({ where: { userId } });
   }
 
   async findByIdsAndUserId(userId: string, ids: string[]): Promise<Habit[]> {
-    return prisma.habit.findMany({
-      where: { userId, id: { in: ids } }
+    return this.prisma.habit.findMany({
+      where: { userId, id: { in: ids } },
     });
   }
 
-  async transaction(operations: any[]): Promise<any> {
-    return prisma.$transaction(operations);
+  async transaction<T>(operations: Prisma.PrismaPromise<T>[]): Promise<T[]> {
+    return this.prisma.$transaction(operations);
   }
 
   createOperation(data: Omit<Habit, 'createdAt'>) {
-    return prisma.habit.create({ data });
+    return this.prisma.habit.create({ data });
   }
 
   updateOperation(id: string, data: Partial<Habit>) {
-    return prisma.habit.update({ where: { id }, data });
+    return this.prisma.habit.update({ where: { id }, data });
   }
 }
-
-export const habitRepository = new HabitRepository();

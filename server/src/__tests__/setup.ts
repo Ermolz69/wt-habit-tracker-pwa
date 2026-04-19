@@ -1,11 +1,9 @@
 import dotenv from 'dotenv';
 import { execSync } from 'child_process';
-import { PrismaClient } from '@prisma/client';
 import { beforeAll, afterAll, afterEach } from 'vitest';
+import { prisma } from '../infrastructure/prisma';
 
 dotenv.config({ path: '.env.test' });
-
-const prisma = new PrismaClient();
 
 beforeAll(() => {
   // Push the schema to the test database

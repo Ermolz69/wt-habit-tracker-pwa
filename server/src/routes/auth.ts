@@ -1,21 +1,16 @@
 import { Router } from 'express';
-import { register, login, getProfile, logout } from '../controllers/auth';
+import { asyncHandler } from '../common/middleware/async-handler';
 import { authMiddleware } from '../middleware/auth';
 import { validate } from '../middleware/validate';
-import { z } from 'zod';
+import { authController } from '../modules/auth.module';
+import { authSchema } from '../validations';
 
 const router = Router();
 
-const authSchema = z.object({
-  body: z.object({
-    username: z.string().min(3),
-    password: z.string().min(6)
-  })
-});
-
-router.post('/register', validate(authSchema), register);
-router.post('/login', validate(authSchema), login);
-router.post('/logout', logout);
-router.get('/me', authMiddleware, getProfile);
+router.post('/register', validate(authSchema), asyncHandler(authController.register));
+router.post('/login', validate(authSchema), asyncHandler(authController.login));
+router.post('/logout', asyncHandler(authController.logout));
+router.get('/me', authMiddleware, asyncHandler(authController.getProfile));
+router.get('/profile', authMiddleware, asyncHandler(authController.getProfile));
 
 export default router;
