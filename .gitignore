@@ -1,1 +1,8 @@
 node_modules
+dist
+dev.db
+dev.db-journal
+test.db
+test.db-journal
+.env
+.env.test

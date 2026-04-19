@@ -17,8 +17,11 @@
     "lint-staged": "^15.2.2"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
+    "client/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c client/eslint.config.js --fix"
+    ],
+    "server/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c server/eslint.config.mjs --fix"
     ]
   }
 }
