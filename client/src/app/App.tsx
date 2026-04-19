@@ -16,28 +16,32 @@ const queryClient = new QueryClient({
 });
 
 export const App = () => {
-  const { token, setUser, logout } = useAuthStore();
+  const { user, isChecking, setUser, setChecking, logout } = useAuthStore();
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (token) {
-        try {
-          const user = await fetchWithAuth('/auth/profile');
-          setUser(user, token);
-        } catch (e) {
-          logout();
-        }
+    const checkAuth = async () => {
+      try {
+        const data = await fetchWithAuth('/auth/me');
+        setUser(data);
+      } catch (e) {
+        logout();
+      } finally {
+        setChecking(false);
       }
     };
-    initAuth();
-  }, [token, setUser, logout]);
+    checkAuth();
+  }, [setUser, logout, setChecking]);
+
+  if (isChecking) {
+    return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-pulse text-gray-500 font-medium">Checking authentication...</div></div>;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" />} />
+          <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

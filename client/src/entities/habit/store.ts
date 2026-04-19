@@ -6,6 +6,7 @@ export interface Habit {
   id: string;
   title: string;
   completedDates: string[]; // YYYY-MM-DD
+  updatedAt: number; // timestamp
 }
 
 interface HabitState {
@@ -38,7 +39,7 @@ export const useHabitStore = create<HabitState>()(
       isLoaded: false,
       setLoaded: () => set({ isLoaded: true }),
       addHabit: (title) => set((state) => ({
-        habits: [{ id: crypto.randomUUID(), title, completedDates: [] }, ...state.habits]
+        habits: [{ id: crypto.randomUUID(), title, completedDates: [], updatedAt: Date.now() }, ...state.habits]
       })),
       deleteHabit: (id) => set((state) => ({
         habits: state.habits.filter(h => h.id !== id)
@@ -51,14 +52,30 @@ export const useHabitStore = create<HabitState>()(
               ...habit,
               completedDates: hasDate 
                 ? habit.completedDates.filter(d => d !== date)
-                : [...habit.completedDates, date]
+                : [...habit.completedDates, date],
+              updatedAt: Date.now()
             };
           }
           return habit;
         });
         return { habits: newHabits };
       }),
-      setHabits: (habits) => set({ habits })
+      setHabits: (serverHabits) => set((state) => {
+        // Implement LWW on client side too when receiving from server
+        // If a server habit is newer, replace local. If local is newer, keep local.
+        const merged = [...state.habits];
+        for (const sHabit of serverHabits) {
+          const idx = merged.findIndex(h => h.id === sHabit.id);
+          if (idx >= 0) {
+            if (sHabit.updatedAt > merged[idx].updatedAt) {
+              merged[idx] = sHabit;
+            }
+          } else {
+            merged.push(sHabit);
+          }
+        }
+        return { habits: merged };
+      })
     }),
     {
       name: 'habits-storage',

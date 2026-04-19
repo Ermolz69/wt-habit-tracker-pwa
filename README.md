@@ -1,59 +1,75 @@
-# 📱 Офлайн-трекер звичок (Progressive Web App)
+# 📱 Offline Habit Tracker (Progressive Web App)
 
-Цей проєкт — демонстраційний веб-застосунок (PWA), створений у рамках навчально-дослідницької роботи. Він демонструє сучасні можливості веб-технологій: роботу без підключення до інтернету (Offline-first), кешування ресурсів за допомогою Service Worker та можливість встановлення на пристрій як повноцінної нативної програми.
+This project is a modern Full-Stack Web Application (PWA) with a Feature-Sliced Design (FSD) architecture on the client and a secure Node.js backend. It demonstrates advanced capabilities: offline-first experience, background data synchronization, JWT authentication, and native-like installation.
 
-## 🚀 Основний функціонал
+## 🚀 Core Features
 
-- **Офлайн-режим:** Застосунок повністю працює без інтернету. Всі дані миттєво зберігаються у внутрішню базу даних браузера (IndexedDB).
-- **Встановлення (Add to Home Screen):** Застосунок можна встановити на смартфон або десктоп прямо з браузера (через власну кнопку або меню браузера).
-- **Відстеження прогресу:** Візуалізація виконання звичок за останні 7 днів.
-- **Управління звичками:** Створення, відмітка виконання та видалення звичок.
+- **Offline-First:** The app operates perfectly without internet. Data is cached locally (IndexedDB via Zustand) and synced later.
+- **Client-Server Architecture:** Node.js/Express backend with Prisma (SQLite) handling Auth and Sync.
+- **Add to Home Screen:** Can be installed on mobile and desktop directly from the browser.
+- **Habit Tracking:** Visualize your 7-day habit progression with elegant UI elements.
+- **Achievement System:** Earn interactive badges based on your streak (SVG sprites used for performance).
 
-## 🛠 Стек технологій
+## 🛠 Tech Stack
 
-- **Фронтенд:** React.js
-- **Збірка:** Vite
-- **PWA Інструменти:** `vite-plugin-pwa` (на базі Workbox)
-- **База даних:** `localforage` (асинхронне сховище на базі IndexedDB)
+- **Frontend:** React 18, Vite, Tailwind CSS, Zustand, React Query.
+- **Backend:** Node.js, Express, TypeScript, Prisma ORM, Zod Validation.
+- **Testing:** Vitest, Supertest.
+- **Code Quality:** ESLint, Husky, Lint-Staged, GitHub Actions.
 
 ---
 
-## 💻 Інструкція зі встановлення та запуску
+## 💻 Installation & Setup
 
-Щоб розгорнути проєкт локально на своєму комп'ютері, виконайте наступні кроки.
+To run this project locally, follow these steps:
 
-### 1. Попередні вимоги
-Переконайтеся, що на вашому комп'ютері встановлено [Node.js](https://nodejs.org/) (разом із пакетним менеджером `npm`).
+### 1. Prerequisites
+Ensure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
 
-### 2. Ініціалізація проєкту
-Відкрийте термінал у папці з проєктом та встановіть всі необхідні залежності. 
-*(Примітка: використовується прапорець `--legacy-peer-deps` для уникнення конфліктів версій між Vite 8 та PWA-плагіном).*
-
-```bash
-npm install --legacy-peer-deps
-```
-
-## 💻 Запуск, збірка та тестування
-### 1. Режим розробки (Development)
-Використовується для написання коду. Зміни миттєво відображаються в браузері (Hot Reload).
+### 2. Project Initialization
+This is a monorepo setup using npm workspaces. Run the following command in the root directory:
 
 ```bash
-npm run dev
+npm install
 ```
-Локальний сервер: http://localhost:5173/
 
-### 2. Збірка проєкту (Production Build)
-Підготовка проєкту до релізу. Інструмент Vite компілює React-код, мініфікує файли та повноцінно генерує Service Worker для офлайн-роботи.
+### 3. Environment Variables
+Create `.env` files in both `client` and `server` based on `.env.example`.
+- `server/.env`: `DATABASE_URL`, `JWT_SECRET`, `PORT`
+- `client/.env`: `VITE_API_URL`
+
+### 4. Database Setup
+Push the schema to the SQLite database:
 ```bash
-npm run build
+npm run prisma:push --workspace=server
 ```
 
-### 3. Тестування PWA (Preview)
-Симуляція реального продакшен-хостингу для перевірки готової збірки. Саме в цьому режимі необхідно тестувати встановлення застосунку та роботу без інтернету.
+## 💻 Development & Build
 
+### Development Mode
+Start both client and server simultaneously:
 ```bash
-npm run preview
+# Terminal 1: Backend (runs on http://localhost:3000)
+npm run dev --workspace=server
+
+# Terminal 2: Frontend (runs on http://localhost:5173)
+npm run dev --workspace=client
 ```
-Локальний сервер: http://localhost:4173/
 
+### Production Build
+Builds the entire workspace (compiles TypeScript backend and Vite frontend with Service Workers):
+```bash
+npm run build --workspaces
+```
 
+### Testing & Linting
+```bash
+# Run all linter checks
+npm run lint --workspaces
+
+# Run type checks
+npm run typecheck --workspaces
+
+# Run backend unit/integration tests
+npm test --workspace=server
+```

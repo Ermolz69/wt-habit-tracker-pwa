@@ -7,21 +7,25 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  token: string | null;
-  setUser: (user: User | null, token: string | null) => void;
+  isChecking: boolean;
+  setUser: (user: User | null) => void;
+  setChecking: (isChecking: boolean) => void;
   logout: () => void;
 }
 
+const savedUser = localStorage.getItem('user');
+
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: localStorage.getItem('token'),
-  setUser: (user, token) => {
-    if (token) localStorage.setItem('token', token);
-    else localStorage.removeItem('token');
-    set({ user, token });
+  user: savedUser ? JSON.parse(savedUser) : null,
+  isChecking: true,
+  setUser: (user) => {
+    if (user) localStorage.setItem('user', JSON.stringify(user));
+    else localStorage.removeItem('user');
+    set({ user });
   },
+  setChecking: (isChecking) => set({ isChecking }),
   logout: () => {
-    localStorage.removeItem('token');
-    set({ user: null, token: null });
+    localStorage.removeItem('user');
+    set({ user: null });
   }
 }));

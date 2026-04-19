@@ -19,9 +19,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'], 
       manifest: {
-        name: 'Мій Трекер Звичок',
-        short_name: 'Трекер',
-        description: 'Офлайн-трекер звичок для щоденного використання',
+        name: 'My Habit Tracker',
+        short_name: 'Tracker',
+        description: 'Offline-first habit tracker for daily use',
         theme_color: '#ffffff', 
         background_color: '#ffffff',
         display: 'standalone', 
@@ -35,6 +35,23 @@ export default defineConfig({
             src: '/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          }
+        ]
+      },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /\/api\/sync\/push/,
+            method: 'POST',
+            handler: 'NetworkOnly',
+            options: {
+              backgroundSync: {
+                name: 'sync-queue',
+                options: {
+                  maxRetentionTime: 24 * 60 // 24 hours
+                }
+              }
+            }
           }
         ]
       }

@@ -5,8 +5,8 @@ export interface AuthRequest extends Request {
   userId?: string;
 }
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction): void => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
     res.status(401).json({ error: 'Authentication required' });

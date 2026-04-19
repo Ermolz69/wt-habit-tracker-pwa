@@ -34,7 +34,6 @@ COPY --from=builder /app/server/node_modules ./server/node_modules
 
 COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/server/prisma ./server/prisma
-COPY --from=builder /app/server/.env ./server/.env
 
 WORKDIR /app/server
 
