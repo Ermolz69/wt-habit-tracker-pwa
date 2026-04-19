@@ -40,14 +40,19 @@ export const AchievementsBoard = () => {
   }, [habits]);
 
   return (
-    <div className="max-w-md mx-auto p-6 font-sans">
-      <h2 className="text-2xl font-bold mb-6 text-dark">My Achievements</h2>
+    <section className="glass-panel rounded-[2rem] border border-white/80 p-6 shadow-panel sm:p-7">
+      <div className="mb-6">
+        <div className="text-[11px] uppercase tracking-[0.32em] font-bold text-muted">
+          Achievements
+        </div>
+        <h2 className="section-title mt-2 text-3xl sm:text-4xl">Momentum trophies</h2>
+      </div>
       {achievements.length === 0 ? (
-        <Card className="py-8 px-4 text-center border-gray-200 bg-white/50">
-          <p className="text-gray-500 font-medium">No achievements yet. Keep tracking your habits!</p>
+        <Card className="border-white/80 bg-white/55 px-4 py-10 text-center">
+          <p className="font-semibold text-muted">No achievements yet. Keep tracking your habits!</p>
         </Card>
       ) : (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {achievements.map((achievement) => (
             <AchievementCard
               key={achievement.id}
@@ -58,6 +63,6 @@ export const AchievementsBoard = () => {
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 };

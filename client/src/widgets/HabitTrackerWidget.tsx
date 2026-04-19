@@ -43,10 +43,20 @@ export const HabitTrackerWidget = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 font-sans">
-      <h2 className="text-3xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-        My Habit Tracker
-      </h2>
+    <section className="glass-panel rounded-[2rem] border border-white/80 p-6 shadow-panel sm:p-7">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.32em] font-bold text-muted">
+            Habit tracker
+          </div>
+          <h2 className="section-title mt-2 text-3xl sm:text-4xl">
+            Daily commitments
+          </h2>
+        </div>
+        <div className="rounded-full bg-white/75 px-4 py-2 text-sm font-semibold text-muted shadow-soft">
+          Last 7 days view
+        </div>
+      </div>
       <HabitForm value={newTitle} onChange={setNewTitle} onSubmit={handleAdd} />
       <div className="flex flex-col gap-4">
         {habits.map((habit) => (
@@ -62,6 +72,6 @@ export const HabitTrackerWidget = () => {
         ))}
         {habits.length === 0 && <HabitEmptyState />}
       </div>
-    </div>
+    </section>
   );
 };

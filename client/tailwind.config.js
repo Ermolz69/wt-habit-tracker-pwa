@@ -7,23 +7,30 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['"Manrope"', 'sans-serif'],
+        display: ['"Space Grotesk"', 'sans-serif'],
       },
       colors: {
-        primary: '#4F46E5', // Indigo 600
-        dark: '#111827', // Gray 900
-        danger: '#EF4444', // Red 500
-        success: '#10B981', // Emerald 500
-        warning: '#F59E0B', // Amber 500
-        background: '#F9FAFB', // Gray 50
-        card: '#FFFFFF',
+        primary: '#0f766e',
+        primarySoft: '#c7f0eb',
+        accent: '#f97316',
+        dark: '#182430',
+        muted: '#667688',
+        danger: '#dc2626',
+        success: '#15803d',
+        warning: '#d97706',
+        background: '#f6f1e8',
+        surface: '#fffaf2',
+        card: '#fffdfa',
       },
       boxShadow: {
-        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-        'glow': '0 0 15px rgba(79, 70, 229, 0.3)',
+        'soft': '0 18px 45px -28px rgba(24, 36, 48, 0.35)',
+        'glow': '0 18px 40px -22px rgba(15, 118, 110, 0.45)',
+        'panel': '0 24px 60px -32px rgba(24, 36, 48, 0.24)',
       },
       animation: {
         blob: "blob 7s infinite",
+        float: "float 5s ease-in-out infinite",
       },
       keyframes: {
         blob: {
@@ -38,6 +45,14 @@ export default {
           },
           "100%": {
             transform: "translate(0px, 0px) scale(1)",
+          },
+        },
+        float: {
+          "0%, 100%": {
+            transform: "translateY(0px)",
+          },
+          "50%": {
+            transform: "translateY(-10px)",
           },
         },
       },
