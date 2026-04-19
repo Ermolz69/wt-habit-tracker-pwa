@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  habits    Habit[]
+}
+
+model Habit {
+  id             String   @id
+  title          String
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  completedDates String   // JSON stringified array of dates
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
