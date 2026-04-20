@@ -1,17 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../app';
+import { createAuthToken, createHabitPayload } from './helpers';
 
 describe('Sync API', () => {
   let token: string;
 
   beforeEach(async () => {
-    const response = await request(app).post('/api/auth/register').send({
-      username: 'syncuser',
-      password: 'password123',
-    });
-
-    token = response.body.token;
+    token = await createAuthToken(app, 'sync-user');
   });
 
   it('pushes habits to server', async () => {
@@ -20,8 +16,8 @@ describe('Sync API', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         habits: [
-          { id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'], updatedAt: Date.now() },
-          { id: '2', title: 'Test Habit 2', completedDates: [], updatedAt: Date.now() },
+          createHabitPayload({ id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'] }),
+          createHabitPayload({ id: '2', title: 'Test Habit 2' }),
         ],
       });
 
@@ -34,7 +30,7 @@ describe('Sync API', () => {
       .post('/api/sync/push')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        habits: [{ id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'], updatedAt: Date.now() }],
+        habits: [createHabitPayload({ id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'] })],
       });
 
     const response = await request(app)
@@ -60,8 +56,8 @@ describe('Sync API', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         habits: [
-          { id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'], updatedAt: Date.now() },
-          { id: '2', title: 'Test Habit 2', completedDates: [], updatedAt: Date.now() },
+          createHabitPayload({ id: '1', title: 'Test Habit 1', completedDates: ['2023-10-01'] }),
+          createHabitPayload({ id: '2', title: 'Test Habit 2' }),
         ],
       });
 
@@ -69,7 +65,7 @@ describe('Sync API', () => {
       .post('/api/sync/push')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        habits: [{ id: '2', title: 'Test Habit 2', completedDates: [], updatedAt: Date.now() + 1 }],
+        habits: [createHabitPayload({ id: '2', title: 'Test Habit 2', updatedAt: Date.now() + 1 })],
       });
 
     const response = await request(app)
@@ -89,13 +85,13 @@ describe('Sync API', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         habits: [
-          {
+          createHabitPayload({
             id: '1',
             title: 'Test Habit 1',
             completedDates: ['2023-10-01'],
             updatedAt: deletedAt,
             deletedAt,
-          },
+          }),
         ],
       });
 

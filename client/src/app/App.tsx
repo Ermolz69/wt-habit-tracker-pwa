@@ -6,6 +6,7 @@ import { HomePage } from '@/pages/home/HomePage';
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 import { useAuthStore } from '@/entities/user';
 import { fetchWithAuth } from '@/shared/api';
+import { ErrorBoundary } from './providers/ErrorBoundary';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,15 +54,17 @@ export const App = () => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" />} />
-          <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/auth" />} />
-          <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" />} />
+            <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/auth" />} />
+            <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };

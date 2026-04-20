@@ -18,9 +18,8 @@ beforeAll(() => {
 
 afterEach(async () => {
   // Clean the database after each test
-  const { prisma } = await import('../infrastructure/prisma');
-  await prisma.habit.deleteMany();
-  await prisma.user.deleteMany();
+  const { resetTestDb } = await import('./helpers');
+  await resetTestDb();
 });
 
 afterAll(async () => {

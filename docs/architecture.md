@@ -9,6 +9,96 @@ The project is a monorepo with two runtime applications:
 
 The goal of the current architecture is clean responsibility separation, testability, and easier long-term maintenance.
 
+## Project infographic
+
+```mermaid
+flowchart LR
+  User["User<br/>Browser / Installed PWA"]
+
+  subgraph Client["Client PWA"]
+    App["React App<br/>routing + providers"]
+    UI["Pages / Widgets<br/>dashboard, auth, profile"]
+    State["Zustand + LocalForage<br/>habits, auth user, sync status"]
+    Sync["Sync feature<br/>auto sync + Sync now"]
+    PWA["Service Worker<br/>precache app shell"]
+  end
+
+  subgraph Server["Node Backend API"]
+    Routes["Express Routes"]
+    Controllers["Controllers<br/>HTTP input/output"]
+    Services["Services<br/>business rules"]
+    Repositories["Repositories<br/>Prisma access"]
+    Prisma["Prisma Client"]
+  end
+
+  subgraph Database["SQLite"]
+    Users["User"]
+    Habits["Habit<br/>completedDates + deletedAt"]
+  end
+
+  User --> App
+  App --> UI
+  UI --> State
+  State --> Sync
+  PWA --> App
+  Sync -->|"POST /api/sync/push<br/>GET /api/sync/pull"| Routes
+  App -->|"auth requests"| Routes
+  Routes --> Controllers --> Services --> Repositories --> Prisma
+  Prisma --> Users
+  Prisma --> Habits
+  State -.->|"offline reads/writes"| User
+```
+
+## Offline-first sync flow
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant UI as React UI
+  participant Store as Zustand + LocalForage
+  participant Sync as Sync feature
+  participant API as Express API
+  participant DB as SQLite
+
+  U->>UI: Create, check-in, or delete habit
+  UI->>Store: Update local state
+  Store->>Store: hasPendingChanges = true
+  UI-->>U: Show "Saved locally" / "Sync pending"
+
+  alt Online
+    Sync->>API: POST /api/sync/push
+    API->>DB: Upsert habits / store deletedAt tombstones
+    Sync->>API: GET /api/sync/pull
+    API->>DB: Read latest user habits
+    API-->>Sync: Habits including deletedAt
+    Sync->>Store: Merge server state
+    Store->>Store: lastSyncedAt = now
+    UI-->>U: Show "Synced"
+  else Offline
+    Sync-->>Store: Do not send network requests
+    UI-->>U: Show "Offline mode"
+  end
+```
+
+## Backend request flow
+
+```mermaid
+flowchart TD
+  Request["HTTP request"]
+  Route["Route<br/>URL + middleware"]
+  Auth["Auth middleware<br/>JWT cookie / Bearer token"]
+  Validate["Validation middleware<br/>Zod schema"]
+  Controller["Controller<br/>request/response only"]
+  Service["Service<br/>use case logic"]
+  Repository["Repository<br/>database operations"]
+  Prisma["Shared Prisma client"]
+  DB["SQLite database"]
+  Response["JSON response"]
+
+  Request --> Route --> Auth --> Validate --> Controller --> Service --> Repository --> Prisma --> DB
+  DB --> Prisma --> Repository --> Service --> Controller --> Response
+```
+
 ## Backend architecture
 
 The backend uses a modular composition-root approach inspired by Nest-style separation of concerns, while still running on Express.

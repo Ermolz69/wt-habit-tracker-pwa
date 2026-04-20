@@ -6,7 +6,7 @@ import { useNetworkStatus } from '@/shared/lib';
 
 export const useSync = () => {
   const { user } = useAuthStore();
-  const { habits, markSynced, markSyncError, setHabits } = useHabitStore();
+  const { habits, clearSyncedDeletedHabits, markSynced, markSyncError, setHabits } = useHabitStore();
   const isOnline = useNetworkStatus();
 
   const pushMutation = useMutation({
@@ -22,6 +22,7 @@ export const useSync = () => {
     },
     onSuccess: () => {
       markSynced();
+      clearSyncedDeletedHabits();
     },
   });
 
@@ -32,6 +33,7 @@ export const useSync = () => {
       const data = await fetchWithAuth<{ habits: typeof habits }>('/sync/pull');
       if (data.habits) {
         setHabits(data.habits);
+        clearSyncedDeletedHabits();
       }
       return data;
     },
@@ -51,6 +53,7 @@ export const useSync = () => {
     try {
       await pushMutation.mutateAsync();
       await pullQuery.refetch();
+      clearSyncedDeletedHabits();
       markSynced();
     } catch (error) {
       markSyncError(error instanceof Error ? error.message : 'Sync failed');

@@ -67,4 +67,20 @@ describe('habit store', () => {
     expect(useHabitStore.getState().syncError).toBeNull();
     expect(useHabitStore.getState().lastSyncedAt).toEqual(expect.any(Number));
   });
+
+  it('clears synced tombstones after successful sync', () => {
+    act(() => {
+      useHabitStore.setState({
+        habits: [
+          { id: 'active', title: 'Read', completedDates: [], updatedAt: 1, deletedAt: null },
+          { id: 'deleted', title: 'Write', completedDates: [], updatedAt: 2, deletedAt: 2 },
+        ],
+      });
+      useHabitStore.getState().clearSyncedDeletedHabits();
+    });
+
+    expect(useHabitStore.getState().habits).toEqual([
+      expect.objectContaining({ id: 'active' }),
+    ]);
+  });
 });

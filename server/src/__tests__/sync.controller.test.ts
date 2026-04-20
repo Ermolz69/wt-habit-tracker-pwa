@@ -50,10 +50,8 @@ describe('SyncController', () => {
     vi.mocked(syncService.pullHabits).mockResolvedValue([
       {
         id: '1',
-        userId: 'user-1',
         title: 'Read',
         completedDates: [],
-        createdAt: new Date(),
         updatedAt: Date.now(),
         deletedAt: null,
       },

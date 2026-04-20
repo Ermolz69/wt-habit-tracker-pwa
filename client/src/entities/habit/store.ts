@@ -19,6 +19,7 @@ interface HabitState {
   setLoaded: () => void;
   addHabit: (title: string) => void;
   deleteHabit: (id: string) => void;
+  clearSyncedDeletedHabits: () => void;
   clearSyncError: () => void;
   markSynced: () => void;
   markSyncError: (message: string) => void;
@@ -61,6 +62,9 @@ export const useHabitStore = create<HabitState>()(
         ),
         hasPendingChanges: true,
         syncError: null,
+      })),
+      clearSyncedDeletedHabits: () => set((state) => ({
+        habits: state.habits.filter((habit) => !habit.deletedAt),
       })),
       clearSyncError: () => set({ syncError: null }),
       markSynced: () => set({ hasPendingChanges: false, lastSyncedAt: Date.now(), syncError: null }),

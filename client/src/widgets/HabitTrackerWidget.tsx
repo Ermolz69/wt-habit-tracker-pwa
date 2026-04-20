@@ -6,6 +6,7 @@ import { getFormattedDate, getLastNDays, useNetworkStatus } from '@/shared/lib';
 import { HabitEmptyState } from '@/widgets/habit-tracker/HabitEmptyState';
 import { HabitForm } from '@/widgets/habit-tracker/HabitForm';
 import { HabitItemCard } from '@/widgets/habit-tracker/HabitItemCard';
+import { HabitListSkeleton } from '@/widgets/habit-tracker/HabitListSkeleton';
 
 export const HabitTrackerWidget = () => {
   const {
@@ -58,11 +59,7 @@ export const HabitTrackerWidget = () => {
           : 'Offline mode';
 
   if (!isLoaded) {
-    return (
-      <div className="p-8 flex justify-center items-center text-gray-500 animate-pulse font-medium">
-        Loading your habits...
-      </div>
-    );
+    return <HabitListSkeleton />;
   }
 
   return (
@@ -80,6 +77,11 @@ export const HabitTrackerWidget = () => {
           {syncLabel}
         </div>
       </div>
+      {!isOnline && (
+        <div className="mb-5 rounded-[1.4rem] border border-amber-200/70 bg-amber-50/85 px-4 py-3 text-sm font-semibold text-warning shadow-soft">
+          Offline mode is active. New changes stay on this device and sync when the connection returns.
+        </div>
+      )}
       <HabitForm value={newTitle} onChange={setNewTitle} onSubmit={handleAdd} />
       <div className="flex flex-col gap-4">
         {visibleHabits.map((habit) => (

@@ -8,6 +8,14 @@ Install dependencies:
 npm install
 ```
 
+Prepare the local SQLite database and Prisma Client:
+
+```bash
+npm run prisma:push --workspace=server
+```
+
+SQLite database files are intentionally not stored in git. The tracked source of truth is `server/prisma/schema.prisma`; local `dev.db` and `test.db` files are generated from that schema.
+
 Start client:
 
 ```bash
@@ -25,9 +33,8 @@ npm run dev --workspace=server
 Before shipping changes, run:
 
 ```bash
-npm run typecheck --workspaces
-npm run build --workspaces
-npm test --workspace=server
+npm run verify
+npm run lint --workspaces
 ```
 
 ## Recommended implementation rules
