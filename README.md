@@ -112,11 +112,21 @@ Run backend tests:
 npm test --workspace=server
 ```
 
+Run the full release verification:
+
+```bash
+npm run verify
+npm run lint --workspaces
+```
+
 ## Documentation
 
 - [Architecture](./docs/architecture.md)
 - [Backend](./docs/backend.md)
 - [Frontend](./docs/frontend.md)
 - [API](./docs/api.md)
+- [Development](./docs/development.md)
+- [Testing](./docs/testing.md)
+- [Release v1.0.0](./docs/releases/v1.0.0.md)
 - [Testing](./docs/testing.md)
 - [Development](./docs/development.md)
