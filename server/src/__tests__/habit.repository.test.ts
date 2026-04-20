@@ -60,6 +60,36 @@ describe('HabitRepository', () => {
     expect(habits[0].id).toBe('habit-2');
   });
 
+  it('does not return habits owned by another user', async () => {
+    const firstUser = await prisma.user.create({
+      data: {
+        username: 'habit-first-owner',
+        password: 'hashed-password',
+      },
+    });
+    const secondUser = await prisma.user.create({
+      data: {
+        username: 'habit-second-owner',
+        password: 'hashed-password',
+      },
+    });
+
+    await repository.transaction([
+      repository.createOperation({
+        id: 'shared-id',
+        userId: firstUser.id,
+        title: 'Read',
+        completedDates: '[]',
+        updatedAt: new Date(),
+        deletedAt: null,
+      }),
+    ]);
+
+    const habits = await repository.findByIdsAndUserId(secondUser.id, ['shared-id']);
+
+    expect(habits).toHaveLength(0);
+  });
+
   it('updates existing habits', async () => {
     const user = await prisma.user.create({
       data: {

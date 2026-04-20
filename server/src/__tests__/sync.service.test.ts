@@ -53,6 +53,32 @@ describe('SyncService', () => {
     expect(habitRepository.transaction).toHaveBeenCalledWith(['update-op']);
   });
 
+  it('does not overwrite newer server habits with stale incoming data', async () => {
+    vi.mocked(habitRepository.findByIdsAndUserId).mockResolvedValue([
+      {
+        id: 'habit-1',
+        userId: 'user-1',
+        title: 'Server newer',
+        completedDates: '[]',
+        createdAt: new Date(),
+        updatedAt: new Date('2026-04-20T10:00:00.000Z'),
+        deletedAt: null,
+      },
+    ]);
+
+    await service.pushHabits('user-1', [
+      {
+        id: 'habit-1',
+        title: 'Client stale',
+        completedDates: ['2026-04-20'],
+        updatedAt: new Date('2026-04-20T09:00:00.000Z').getTime(),
+      },
+    ]);
+
+    expect(habitRepository.updateOperation).not.toHaveBeenCalled();
+    expect(habitRepository.transaction).toHaveBeenCalledWith([]);
+  });
+
   it('does not delete habits missing from incoming snapshot', async () => {
     vi.mocked(habitRepository.findByIdsAndUserId).mockResolvedValue([]);
 

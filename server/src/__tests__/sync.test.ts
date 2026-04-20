@@ -103,4 +103,27 @@ describe('Sync API', () => {
     expect(response.body.habits).toHaveLength(1);
     expect(response.body.habits[0].deletedAt).toBe(deletedAt);
   });
+
+  it('rejects invalid sync date payloads', async () => {
+    const response = await request(app)
+      .post('/api/sync/push')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        habits: [createHabitPayload({ completedDates: ['20-04-2026'] })],
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Validation failed');
+  });
+
+  it('rejects sync payloads without auth before validation matters', async () => {
+    const response = await request(app)
+      .post('/api/sync/push')
+      .send({
+        habits: [createHabitPayload()],
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe('Authentication required');
+  });
 });

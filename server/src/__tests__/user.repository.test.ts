@@ -36,4 +36,9 @@ describe('UserRepository', () => {
 
     expect(user?.id).toBe(createdUser.id);
   });
+
+  it('returns null for missing users', async () => {
+    await expect(repository.findByUsername('missing')).resolves.toBeNull();
+    await expect(repository.findById('missing-id')).resolves.toBeNull();
+  });
 });

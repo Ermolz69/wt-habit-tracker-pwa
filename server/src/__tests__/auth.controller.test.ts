@@ -44,7 +44,11 @@ describe('AuthController', () => {
     await controller.register(request, response);
 
     expect(authService.register).toHaveBeenCalledWith('john', 'password123');
-    expect(response.cookie).toHaveBeenCalled();
+    expect(response.cookie).toHaveBeenCalledWith('token', 'token-value', expect.objectContaining({
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax',
+    }));
     expect(response.status).toHaveBeenCalledWith(201);
     expect(response.json).toHaveBeenCalledWith({
       user: { id: '1', username: 'john' },
@@ -65,7 +69,10 @@ describe('AuthController', () => {
 
     await controller.login(request, response);
 
-    expect(response.cookie).toHaveBeenCalled();
+    expect(response.cookie).toHaveBeenCalledWith('token', 'token-value', expect.objectContaining({
+      httpOnly: true,
+      secure: false,
+    }));
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith({
       user: { id: '1', username: 'john' },
@@ -98,5 +105,27 @@ describe('AuthController', () => {
 
     expect(authService.getProfile).toHaveBeenCalledWith('user-1');
     expect(response.json).toHaveBeenCalled();
+  });
+
+  it('sets secure cookies in production', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    const request = {
+      body: { username: 'john', password: 'password123' },
+    } as AuthRequest;
+    const response = createResponse();
+
+    vi.mocked(authService.login).mockResolvedValue({
+      user: { id: '1', username: 'john' },
+      token: 'token-value',
+    });
+
+    await controller.login(request, response);
+
+    expect(response.cookie).toHaveBeenCalledWith('token', 'token-value', expect.objectContaining({
+      secure: true,
+    }));
+
+    process.env.NODE_ENV = originalNodeEnv;
   });
 });

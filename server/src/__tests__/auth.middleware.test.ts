@@ -63,4 +63,19 @@ describe('authMiddleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
   });
+
+  it('rejects malformed bearer headers as invalid tokens', () => {
+    const request = {
+      cookies: {},
+      header: vi.fn().mockReturnValue('Token invalid'),
+    } as unknown as AuthRequest;
+    const next = vi.fn() as NextFunction;
+
+    authMiddleware(request, {} as Response, next);
+
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({
+      message: 'Invalid token',
+      statusCode: 401,
+    }));
+  });
 });

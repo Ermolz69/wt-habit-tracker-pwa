@@ -74,4 +74,38 @@ describe('Auth API', () => {
     expect(response.status).toBe(200);
     expect(response.body.username).toBe('testuser');
   });
+
+  it('rejects invalid registration payloads', async () => {
+    const response = await request(app).post('/api/auth/register').send({
+      username: 'ab',
+      password: '123',
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Validation failed');
+    expect(response.body.details).toEqual(expect.any(Array));
+  });
+
+  it('rejects login with wrong password', async () => {
+    await request(app).post('/api/auth/register').send({
+      username: 'testuser',
+      password: 'password123',
+    });
+
+    const response = await request(app).post('/api/auth/login').send({
+      username: 'testuser',
+      password: 'wrong-password',
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe('Invalid credentials');
+  });
+
+  it('clears auth cookie on logout', async () => {
+    const response = await request(app).post('/api/auth/logout');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ success: true });
+    expect(response.headers['set-cookie'][0]).toContain('token=');
+  });
 });

@@ -20,7 +20,8 @@ export const useSync = () => {
     onError: (error) => {
       markSyncError(error instanceof Error ? error.message : 'Sync failed');
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (!data) return;
       markSynced();
       clearSyncedDeletedHabits();
     },

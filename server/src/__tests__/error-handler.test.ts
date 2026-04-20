@@ -24,6 +24,16 @@ describe('errorHandler', () => {
     expect(response.json).toHaveBeenCalledWith({ error: 'Unauthorized', details: undefined });
   });
 
+  it('passes AppError details to response', () => {
+    const response = createResponse();
+    const details = [{ field: 'username', message: 'Required' }];
+
+    errorHandler(new AppError('Invalid input', 422, details), {} as never, response, {} as never);
+
+    expect(response.status).toHaveBeenCalledWith(422);
+    expect(response.json).toHaveBeenCalledWith({ error: 'Invalid input', details });
+  });
+
   it('handles ZodError', () => {
     const response = createResponse();
     const zodError = z.object({ name: z.string() }).safeParse({}).error!;

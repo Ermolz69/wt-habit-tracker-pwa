@@ -73,6 +73,20 @@ describe('AuthService', () => {
     });
   });
 
+  it('rejects login when password does not match', async () => {
+    vi.mocked(userRepository.findByUsername).mockResolvedValue({
+      id: 'user-1',
+      username: 'john',
+      password: await bcrypt.hash('password123', 10),
+      createdAt: new Date(),
+    });
+
+    await expect(service.login('john', 'wrong-password')).rejects.toMatchObject({
+      message: 'Invalid credentials',
+      statusCode: 401,
+    });
+  });
+
   it('returns user profile', async () => {
     const createdAt = new Date();
     vi.mocked(userRepository.findById).mockResolvedValue({

@@ -24,6 +24,37 @@ describe('habit mapper', () => {
     });
   });
 
+  it('maps active Prisma habits with null deletedAt', () => {
+    const habit = {
+      id: 'habit-1',
+      userId: 'user-1',
+      title: 'Read',
+      completedDates: '[]',
+      createdAt: new Date('2026-04-20T10:00:00.000Z'),
+      updatedAt: new Date('2026-04-20T10:01:00.000Z'),
+      deletedAt: null,
+    } satisfies Habit;
+
+    expect(toHabitDto(habit)).toEqual(expect.objectContaining({
+      completedDates: [],
+      deletedAt: null,
+    }));
+  });
+
+  it('uses current time defaults for payloads without updatedAt', () => {
+    const before = Date.now();
+    const input = toHabitCreateInput('user-1', {
+      id: 'habit-1',
+      title: 'Read',
+      completedDates: [],
+    });
+    const after = Date.now();
+
+    expect(input.updatedAt).toBeInstanceOf(Date);
+    expect((input.updatedAt as Date).getTime()).toBeGreaterThanOrEqual(before);
+    expect((input.updatedAt as Date).getTime()).toBeLessThanOrEqual(after);
+  });
+
   it('maps sync payloads to persistence create input', () => {
     expect(toHabitCreateInput('user-1', {
       id: 'habit-1',
