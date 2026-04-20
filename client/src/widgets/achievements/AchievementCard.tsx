@@ -8,12 +8,14 @@ interface AchievementCardProps {
 
 export const AchievementCard = ({ description, icon, name }: AchievementCardProps) => {
   return (
-    <Card className="p-4 bg-white border-gray-100 text-center group">
-      <svg className="w-14 h-14 text-warning mb-3 mx-auto drop-shadow-md group-hover:scale-110 transition-transform duration-300">
-        <use href={`/sprite.svg#${icon}`} />
-      </svg>
-      <div className="text-sm font-bold text-dark leading-tight mb-1">{name}</div>
-      <div className="text-[10px] text-gray-500">{description}</div>
+    <Card className="group border-white/80 bg-white/82 p-5 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[1.6rem] bg-gradient-to-br from-accent/15 to-primary/15">
+        <svg className="h-10 w-10 text-warning drop-shadow-md transition-transform duration-300 group-hover:scale-110">
+          <use href={`/sprite.svg#${icon}`} />
+        </svg>
+      </div>
+      <div className="font-display text-lg text-dark">{name}</div>
+      <div className="mt-2 text-xs leading-5 text-muted">{description}</div>
     </Card>
   );
 };

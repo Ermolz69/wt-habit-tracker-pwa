@@ -8,10 +8,10 @@ interface AlertProps {
 
 export const Alert = ({ children, variant = 'danger', className = '' }: AlertProps) => {
   const variants = {
-    danger: "bg-red-50 text-danger border-red-100",
-    success: "bg-emerald-50 text-success border-emerald-100",
-    warning: "bg-amber-50 text-warning border-amber-100",
-    info: "bg-blue-50 text-primary border-blue-100",
+    danger: "bg-red-50/90 text-danger border-red-200/70",
+    success: "bg-emerald-50/90 text-success border-emerald-200/70",
+    warning: "bg-amber-50/90 text-warning border-amber-200/70",
+    info: "bg-teal-50/90 text-primary border-teal-200/70",
   };
 
   const icons = {
@@ -26,7 +26,7 @@ export const Alert = ({ children, variant = 'danger', className = '' }: AlertPro
   };
 
   return (
-    <div className={`p-3 rounded-xl text-sm font-medium border flex items-center gap-2 ${variants[variant]} ${className}`}>
+    <div className={`p-4 rounded-[1.2rem] text-sm font-semibold border flex items-center gap-3 shadow-soft ${variants[variant]} ${className}`}>
       {icons[variant]}
       {children}
     </div>

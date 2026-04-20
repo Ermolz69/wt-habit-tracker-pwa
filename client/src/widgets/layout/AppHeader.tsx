@@ -8,18 +8,23 @@ interface AppHeaderProps {
 
 export const AppHeader = ({ isSyncing, onLogout, username }: AppHeaderProps) => {
   return (
-    <header className="bg-white/80 backdrop-blur-md px-6 py-4 shadow-sm mb-10 sticky top-0 z-50 flex justify-between items-center border-b border-gray-100">
-      <div className="font-extrabold text-xl text-dark">
-        Hello, <span className="text-primary">{username}</span>!
+    <header className="glass-panel sticky top-4 z-50 mx-auto flex max-w-6xl items-center justify-between rounded-[1.8rem] border border-white/80 px-4 py-4 shadow-panel sm:px-6">
+      <div>
+        <div className="text-[11px] font-bold uppercase tracking-[0.32em] text-muted">
+          Daily rhythm dashboard
+        </div>
+        <div className="mt-1 font-display text-2xl text-dark">
+          Hello, <span className="text-primary">{username}</span>
+        </div>
       </div>
-      <div className="flex gap-6 items-center">
+      <div className="flex gap-4 items-center">
         {isSyncing && (
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 rounded-full bg-white/70 px-3 py-2 shadow-soft">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
             </span>
-            <span className="text-sm font-medium text-gray-500">Syncing...</span>
+            <span className="text-sm font-semibold text-muted">Syncing...</span>
           </div>
         )}
         <Button type="button" variant="ghost" onClick={() => void onLogout()}>

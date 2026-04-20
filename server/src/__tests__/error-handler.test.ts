@@ -39,10 +39,13 @@ describe('errorHandler', () => {
 
   it('handles unknown errors', () => {
     const response = createResponse();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     errorHandler(new Error('boom'), {} as never, response, {} as never);
 
     expect(response.status).toHaveBeenCalledWith(500);
     expect(response.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+    
+    consoleSpy.mockRestore();
   });
 });
